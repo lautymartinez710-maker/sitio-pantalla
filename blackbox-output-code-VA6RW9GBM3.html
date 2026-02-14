@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmisor - Celular</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <h1>Transmisor: Comparte tu Pantalla desde el Celular</h1>
+    <button id="start">Iniciar Compartir Pantalla</button>
+    <p>ID de Conexión: <span id="peerId"></span></p>
+    <video id="localVideo" autoplay muted style="width: 100%; max-width: 400px;"></video>
+
+    <script>
+        const peer = new Peer(); // Crea un peer único
+        const localVideo = document.getElementById('localVideo');
+        const startBtn = document.getElementById('start');
+        let localStream;
+
+        peer.on('open', (id) => {
+            document.getElementById('peerId').textContent = id;
+        });
+
+        startBtn.addEventListener('click', async () => {
+            try {
+                // Captura la pantalla (screen sharing)
+                localStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { width: 3840, height: 2160, frameRate: 30 }, // 4K si soportado
+                    audio: false
+                });
+                localVideo.srcObject = localStream;
+
+                // Espera conexión desde PC
+                peer.on('call', (call) => {
+                    call.answer(localStream); // Responde con el stream
+                });
+            } catch (err) {
+                console.error('Error al compartir pantalla:', err);
+                alert('Error: Asegúrate de usar Chrome y otorgar permisos.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptor - Computadora</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <h1>Receptor: Mira la Pantalla del Celular en 4K</h1>
+    <input id="peerIdInput" placeholder="Ingresa el ID del Celular" />
+    <button id="connect">Conectar</button>
+    <video id="remoteVideo" autoplay style="width: 100%; max-width: 1920px;"></video> <!-- Ajusta a 4K si la pantalla lo soporta -->
+
+    <script>
+        const peer = new Peer();
+        const remoteVideo = document.getElementById('remoteVideo');
+        const connectBtn = document.getElementById('connect');
+        const peerIdInput = document.getElementById('peerIdInput');
+
+        connectBtn.addEventListener('click', () => {
+            const peerId = peerIdInput.value;
+            const call = peer.call(peerId, null); // Llama al peer del celular
+
+            call.on('stream', (remoteStream) => {
+                remoteVideo.srcObject = remoteStream; // Muestra el stream
+            });
+
+            call.on('error', (err) => {
+                console.error('Error de conexión:', err);
+                alert('Error: Verifica el ID y la conexión.');
+            });
+        });
+    </script>
+</body>
+</html>
